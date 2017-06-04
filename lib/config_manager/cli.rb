@@ -17,6 +17,23 @@ module ConfigManager
       file.link_to(target_path) unless ::File.exist?(target_path)
     end
 
+    option :encrypted, type: :boolean, default: false
+    desc 'import PATH', 'Import a config file at PATH'
+    def import(path)
+      source_path = ::File.expand_path(::File.join(current_directory, path))
+      target_pathname = ::Pathname.new(source_path)
+
+      home_path = ::Pathname.new(ENV['HOME'])
+      relative_path = target_pathname.relative_path_from(home_path).to_s
+
+      file = options[:encrypted] ? EncryptedFile.new(relative_path) : File.new(relative_path)
+      raise ::Errno::EEXIST if file.exist?
+
+      ::FileUtils.mkdir_p(file.directory) unless ::File.directory?(file.directory)
+      ::FileUtils.mv(source_path, file.path)
+      file.link_to(source_path)
+    end
+
     protected
 
     def current_directory
