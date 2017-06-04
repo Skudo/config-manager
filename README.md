@@ -1,0 +1,1 @@
+[![Travis CI Build Status](https://travis-ci.org/Skudo/config-manager.svg?branch=develop)](https://travis-ci.org/Skudo/config-manager)
